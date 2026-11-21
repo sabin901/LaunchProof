@@ -115,7 +115,9 @@ export function createActionTools(env: Env, userId: string, callerJwt: string, e
       }
     }
     const integrationName = target.name
-    const billingMode = lookupOwn(integrations, integrationName)?.billing ?? 'developer'
+    const config = lookupOwn(integrations, integrationName)
+    if (!config) return { success: false, error: 'Integration not enabled for this app' }
+    const billingMode = config.billing
 
     // The api-worker bills the JWT subject: owner for developer mode, caller
     // for user mode. It does not accept a client-supplied billing override.

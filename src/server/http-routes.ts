@@ -238,6 +238,10 @@ export function registerAuthAndIntegrationRoutes(app: Hono<AppContext>): void {
     const target = integrationPath(integrationName, c.req.param('endpoint'))
     if (!target) return c.json({ error: 'Unknown integration' }, 404)
     const config = lookupOwn(integrations, integrationName)
+    // LaunchProof only exposes integrations explicitly enabled for its product.
+    // The scaffold's owner-billed fallback would let any signed-in user spend
+    // owner credits on services that this app does not use.
+    if (!config) return c.json({ error: 'Integration not enabled for this app' }, 404)
     const billingMode = config?.billing ?? 'developer'
 
     // Sign-in is required unless the app opts this integration into anonymous

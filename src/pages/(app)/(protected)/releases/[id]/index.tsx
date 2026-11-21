@@ -40,13 +40,13 @@ export default function ReleaseWorkspace() {
     )
   }
   const release = releases.records[0]?.data
-  if (releases.status === 'error' || gates.status === 'error')
+  if ([releases.status, gates.status, members.status].includes('error'))
     return (
       <div className="lp-page" role="alert">
         Connection failed. Check your network and refresh.
       </div>
     )
-  if (releases.status !== 'ready' || gates.status !== 'ready')
+  if ([releases.status, gates.status, members.status].some((status) => status !== 'ready'))
     return (
       <div className="lp-page" role="status">
         Connecting to release…
@@ -139,7 +139,7 @@ export default function ReleaseWorkspace() {
               <span> / 5</span>
             </div>
             <p>Gates verified</p>
-            <progress max={5} value={readiness.verified} />
+            <progress aria-label="Verified gates" max={5} value={readiness.verified} />
             <p>
               Every gate requires evidence and an attributed reviewer before
               approval.
@@ -189,6 +189,13 @@ export default function ReleaseWorkspace() {
           </section>
           <section className="lp-panel">
             <h2>Activity</h2>
+            {events.status === 'error' ? (
+              <p role="alert">Activity could not load. Refresh to try again.</p>
+            ) : events.status !== 'ready' ? (
+              <p role="status">Loading activity…</p>
+            ) : events.records.length === 0 ? (
+              <p>No activity recorded yet.</p>
+            ) : null}
             {events.records.map((e) => (
               <div className="lp-event" key={e.recordId}>
                 <p>{e.data.summary}</p>

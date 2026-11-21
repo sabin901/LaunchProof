@@ -64,7 +64,7 @@ Three usable DeepSpace test accounts are needed for all tests. Inspect `npx deep
 
 To test an existing deployment without starting a local server, set `LAUNCHPROOF_BASE_URL` to its HTTPS origin and run `npx playwright test --config tests/playwright.config.ts`. Do not point this at an unrelated app.
 
-Verified November 21, 2026 (America/Chicago): 10 unit tests; 20 local Playwright tests, including end-to-end browser approval, independent reviewer enforcement, three-user isolation, underlying record API denials, concurrent decision/edit, concurrent approvals, rejection, reconnect and report refresh. Typecheck, lint and production build passed. All 20 browser tests also passed against the live deployment on November 21, 2026 at approximately 3:56 PM Central, using fresh browser contexts and real production auth/records. The production error-log query returned zero events. The developer has not been credited with personally executing these agent-run checks. See `BUILD_STATE.md` for actual failures and fixes.
+Verified November 21, 2026 (America/Chicago): 10 unit tests; 21 local Playwright tests, including end-to-end browser approval, independent reviewer enforcement, three-user isolation, underlying record API denials, concurrent decision/edit, concurrent approvals, rejection, reconnect and report refresh. Typecheck, lint and production build passed. All 20 browser tests also passed against the live deployment on November 21, 2026 at approximately 3:56 PM Central, using fresh browser contexts and real production auth/records. The production error-log query returned zero events. The developer has not been credited with personally executing these agent-run checks. See `BUILD_STATE.md` for actual failures and fixes.
 
 ## Source and deployment
 
@@ -77,9 +77,13 @@ GitHub is the requested source. Before first deployment, `deepspace status --jso
 - One fixed production-release policy; no generic policy builder, CI fetching or deployment automation.
 - Reviewer IDs provide a small existing-user handoff without exposing a public user directory or building email invitations.
 - Human attestation is not proof that a referenced test passed. Supporting links are not fetched or certified.
-- No optional AI/email integration was added. The core workflow needs neither provider credits nor an external API. The scaffold's generic integration/debug surfaces remain, but no integration is part of release decisions.
+- No optional AI/email integration was added. The core workflow needs neither provider credits nor an external API. The integration catalog/debug surfaces remain, but external integration execution is denied unless explicitly enabled in the app allowlist. No integration is part of release decisions.
 - Evidence edits have no version history beyond activity messages; a final decision captures the exact latest evidence. No membership removal, release deletion, retention management, or partial-creation repair UI.
 - New releases may duplicate if creation is retried after an ambiguous network failure; review the list first. Evidence is last-writer-wins before the final decision. Serialization trades throughput for a small, understandable correctness boundary in a single scope.
 - Codex generated the app-specific schemas, rules, actions, UI, tests, and documentation; inspected SDK implementation/types; ran the recorded tests; reviewed desktop/mobile screenshots. The developer supplied the scope, required independent review, authenticated the CLI, and selected the public GitHub repository. No claim is made that the developer personally ran the automated checks.
 
 
+
+## Pre-submission audit
+
+See [AUDIT.md](AUDIT.md) for the final security findings, fixes, dependency advisory, and personal verification checklist. The audit added explicit integration allowlisting and regression checks for malformed actions and direct record access.

@@ -10,7 +10,8 @@
  * 'developer' integration to let signed-out visitors call it too — the owner
  * then pays for anyone who can reach the app.
  *
- * Integrations not listed here default to 'developer' with sign-in required.
+ * LaunchProof rejects integrations not listed here. Add one only when a
+ * product feature needs it, with an explicit billing choice.
  *
  * IMPORTANT: any integration backed by per-user connected accounts (Google,
  * Composio) must be 'user' — the api-worker resolves the account from the
@@ -24,7 +25,5 @@ export const integrations: Record<
   string,
   { billing: 'developer' | 'user'; anonymous?: boolean }
 > = {
-  google: { billing: 'user' },
-  composio: { billing: 'user' },
-  // openai: { billing: 'developer', anonymous: true },
+  // No external integrations are needed for the release review workflow.
 }

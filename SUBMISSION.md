@@ -1,21 +1,20 @@
 # LaunchProof submission
 
-LaunchProof preserves the evidence and reasoning behind software release sign-off. Reviewers record human attestations against five production-release gates. An authenticated lead may approve only when every gate has evidence and at least one was verified by another active reviewer. Each decision saves a historical snapshot and makes the release read-only.
-
-DeepSpace capabilities used: built-in authentication, RecordRoom storage and team RBAC, live useQuery subscriptions, authenticated server actions, multi-user testing fixtures, and Cloudflare Worker/RecordRoom runtime. DeepSpace production hosting verified.
-
-Source: https://github.com/sabin901/LaunchProof
-
 Live URL: https://launchproof-sabin901.app.space
 
-External integrations: none added. We prioritized a complete collaborative workflow and adversarial authorization tests over optional AI summaries or email.
+Repository: https://github.com/sabin901/LaunchProof
 
-Key tradeoff: one fixed production-release policy and human-attested evidence, not automatic CI certification. Actions serialize within the existing RecordRoom; this is not crash rollback, cryptographic immutability, or a claim of unlimited scale.
+## Writeup
 
-Codex generated and tested the implementation. Local verification: 10 unit tests, 20 browser tests, typecheck, lint, and production build. These cover actual multi-user synchronization, direct record access controls, independent-review enforcement, concurrency, final-state locks and report persistence. All 20 browser tests also passed against production on November 21, 2026, including the complete two-person approval flow. Production error logs returned zero events in the checked window.
+LaunchProof is a collaborative software-release sign-off workspace. A lead creates a release with five verification gates, reviewers record evidence, and approval requires all five gates plus at least one attestation from another active reviewer. A final decision saves an evidence snapshot and locks further edits. Search, status filters, reviewer handoff links, and JSON/print reports support the complete workflow.
 
-Developer's personal verification: add only checks you actually perform; agent-run tests are listed separately above.
+I used DeepSpace authentication, RecordRoom storage and team permissions, live useQuery subscriptions, authenticated server actions, and production hosting. No external integrations were added: AI summaries or email would not improve the core verification flow enough to justify the extra scope. Unconfigured integration calls are blocked.
 
+The main tradeoff is a fixed release policy with human-attested evidence instead of automatic CI verification. Actions serialize within one RecordRoom to protect decisions from concurrent edits; this is not crash rollback or cryptographic immutability. Next I would add evidence revision history and recovery for interrupted setup.
 
-The dashboard also supports release search/status filters, an attention view, one-click handoff links, and export/print of saved reports. The interface uses deep-maroon accents on warm off-white. Repeated form request state is consolidated in a small shared hook; no new runtime dependencies were added.
+I directed Codex on the scope, independent-review requirement, public repository, and visual design. Codex implemented the app and tests, inspected SDK behavior, and ran typecheck, lint, 10 unit tests, and the browser suite against real authentication and records. The pre-submission audit expanded the suite to 21 browser tests and closed an unused integration billing route. Agent-run checks cover multi-user sync, access isolation, concurrent decisions, read-only final reports, exports, and mobile layout.
 
+## Before pasting into the portal
+
+- Personally complete the two-account walkthrough in AUDIT.md, then add one sentence saying exactly what you checked. Do not describe agent-run tests as your own manual verification.
+- The supplied portal copy conflicts: its main instructions say no minimum integration count, while its lower project-bar panel says at least three. This project uses native DeepSpace capabilities and zero external integrations; keep that distinction explicit.

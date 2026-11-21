@@ -66,6 +66,8 @@ test('API status page renders loading success and error states', async ({ users 
   const [user] = await users(1)
   let shouldFail = false
   let requestCount = 0
+  let releaseCatalog!: () => void
+  const catalogReady = new Promise<void>((resolve) => { releaseCatalog = resolve })
 
   await user.page.route('**/api/integrations', async (route) => {
     requestCount += 1
@@ -78,7 +80,7 @@ test('API status page renders loading success and error states', async ({ users 
       return
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 100))
+    await catalogReady
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -88,6 +90,7 @@ test('API status page renders loading success and error states', async ({ users 
 
   await user.page.goto('/api-status')
   await expect(user.page.getByText('Loading integration catalog...')).toBeVisible()
+  releaseCatalog()
   await expect(user.page.getByText('Integration catalog ready')).toBeVisible()
   await expect(user.page.getByText('2 integrations available.')).toBeVisible()
 
@@ -107,9 +110,12 @@ test('API status page renders loading success and error states', async ({ users 
 test('API status page shows local retry after first-load API failure', async ({ users }) => {
   const [user] = await users(1)
   let requestCount = 0
+  let releaseFailure!: () => void
+  const failureReady = new Promise<void>((resolve) => { releaseFailure = resolve })
 
   await user.page.route('**/api/integrations', async (route) => {
     requestCount += 1
+    await failureReady
     await route.fulfill({
       status: 502,
       contentType: 'application/json',
@@ -119,6 +125,7 @@ test('API status page shows local retry after first-load API failure', async ({ 
 
   await user.page.goto('/api-status')
   await expect(user.page.getByText('Loading integration catalog...')).toBeVisible()
+  releaseFailure()
   await expect(user.page.getByText('Could not load API data')).toBeVisible()
   await expect(user.page.getByText('Retried 1 time automatically.')).toBeVisible()
 

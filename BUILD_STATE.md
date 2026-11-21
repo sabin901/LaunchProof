@@ -83,3 +83,9 @@ Finish Phase 1 UI and pure tests, start authenticated dev server, verify creatio
 - User superseded orange with maroon/dark red. Applied #7d2437 accent, #581526 hover, #f6e9ed soft accents, and warm off-white across CSS and browser theme color.
 - Full redesigned production suite passed 20 tests on the preceding release. After the color-only correction, local UI workflow and dashboard tests both passed; inspected maroon screenshot.
 - Updated README, submission notes and screenshots to match the final theme.
+
+## Pre-submission audit
+- Found and closed unconfigured owner-billed integration execution in public proxy and action helper; explicit empty allowlist.
+- Fixed timing-dependent catalog loading assertions using a controlled external response; membership/activity connection states and progress accessibility improved.
+- Expanded security cases; typecheck/lint/10 unit/21 local browser tests pass.
+- One low esbuild Windows servedir advisory remains in SDK/build dependencies; compatible audit fix preview offers no version change. No moderate/high/critical findings. See AUDIT.md for bounded scan, limitations, and personal walkthrough.
