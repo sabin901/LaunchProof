@@ -28,3 +28,9 @@ Finish Phase 1 UI and pure tests, start authenticated dev server, verify creatio
 - Registration produced app_01M80009Z3FM4K2GTPMS4KXA08. Three test accounts created through CLI; credentials kept only in SDK credential store.
 - Source unclaimed; no deployment. Membership isolation, evidence, approval and concurrency remain unverified.
 - Next: Phase 2 actions and actual three-user isolation/live update tests.
+
+## Phase 2 verified
+- Added addReviewer/verifyGate authorization, membership/actor checks, safe evidence validation, GateCard editor, reviewer form and activity subscriptions.
+- npm run type-check PASS. deepspace test run tests/release-collab.spec.ts --port 5181 PASS (one real three-user test).
+- Verified live reviewer evidence visible to lead without refresh; outsider workspace withheld and forged action refused; reviewer cannot invite; refresh after offline/online preserves evidence.
+- Next: final decision/report, direct-RBAC checks and concurrency tests. Investigate same-RecordRoom serialization via Cloudflare blockConcurrencyWhile (documented at developers.cloudflare.com/durable-objects/api/state/), no new DO or data store.
