@@ -34,3 +34,18 @@ Finish Phase 1 UI and pure tests, start authenticated dev server, verify creatio
 - npm run type-check PASS. deepspace test run tests/release-collab.spec.ts --port 5181 PASS (one real three-user test).
 - Verified live reviewer evidence visible to lead without refresh; outsider workspace withheld and forged action refused; reviewer cannot invite; refresh after offline/online preserves evidence.
 - Next: final decision/report, direct-RBAC checks and concurrency tests. Investigate same-RecordRoom serialization via Cloudflare blockConcurrencyWhile (documented at developers.cloudflare.com/durable-objects/api/state/), no new DO or data store.
+
+## Phase 3 verification and accepted scope refinement
+- Decision action, saved report, final-state write locks, and same-RecordRoom workflow serialization implemented. Authenticated edge forwards only verified identity; the existing DO executes bounded SDK record calls under blockConcurrencyWhile, avoiding reentrant RPC or integration calls. This is serialization, not crash rollback or cryptographic immutability.
+- Failures found/fixed: SDK booleans arrive as SQLite 0/1 (strict true caused all approvals to fail); report nested beneath a non-Outlet route (moved workspace to [id]/index.tsx); direct-tool failures use ok:false/code:tool_failed (updated assertions to match actual denial envelope).
+- Decision/race/report test passed. Full pre-refinement suite passed 19 tests. Typecheck/lint/build passed; pure suite now 10 tests.
+- User supplied critical evaluation: implemented mandatory active independent reviewer attestation before approval, captured reviewer IDs, and clarified product/evidence wording. Contract amended explicitly. Updated tests enforce self-approval denial.
+- User explicitly selected public GitHub repository and supplied https://github.com/sabin901/LaunchProof.git. Existing repo was empty/public; connected origin without overwriting history. DeepSpace status now infers github.
+- Next: complete updated full-suite and visual checks, commit/push, deploy with verified GitHub source, test production with fresh authenticated contexts.
+
+## Phases 3–4 complete locally
+- Updated policy suite: 19/19 Playwright tests passed; 10/10 unit tests passed; typecheck/lint/build passed.
+- Visual QA: inspected desktop landing/workspace and 390px report. Fixed route scroll restoration; reran full UI workflow PASS after fix. Mobile has no horizontal overflow.
+- Independent reviewer is mandatory on server and in UI; active reviewer IDs are captured in snapshot. Lead-only five-gate self-approval is tested/refused.
+- Added README and submission draft with limitations and precise attribution. Optional AI/email omitted.
+- Next: push public GitHub main and deploy clean revision; run production tests and inspect logs.

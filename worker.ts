@@ -16,6 +16,7 @@ import {
   RecordRoom,
   resolveAppRole,
   workerErrorHandler,
+  lookupOwn,
   YjsRoom,
 } from 'deepspace/worker'
 import type { DOBindings, DOManifest, Job, JobContext } from 'deepspace/worker'
@@ -25,7 +26,8 @@ import { buildTools } from './src/ai/tools.js'
 import { tasks as cronTasks, runTask as runCronTask } from './src/cron.js'
 import { runJob } from './src/jobs.js'
 import { schemas } from './src/schemas.js'
-import { registerActionRoutes } from './src/server/action-routes.js'
+import { registerActionRoutes, createActionTools } from './src/server/action-routes.js'
+import { actions } from './src/actions/index.js'
 import {
   registerAuthAndIntegrationRoutes,
   registerPlatformProxyRoutes,
@@ -47,6 +49,25 @@ export const __DO_MANIFEST__ = [
 export class AppRecordRoom extends RecordRoom<Env> {
   constructor(state: DurableObjectState, env: Env) {
     super(state, env, schemas, { ownerUserId: env.OWNER_USER_ID })
+  }
+
+  override async fetch(request: Request): Promise<Response> {
+    if (new URL(request.url).pathname !== '/internal/launchproof-action') return super.fetch(request)
+    const userId = request.headers.get('X-User-Id')
+    if (request.method !== 'POST' || request.headers.get('X-App-Action') !== 'true' || !userId) return new Response('Unauthorized', { status: 401 })
+    // This URL is only reached through the authenticated action route and DO
+    // binding, never a public proxy. No network/integration calls in the lock.
+    // Serialization is not rollback: creation still uses initializing/init_failed.
+    return this.state.blockConcurrencyWhile(async () => {
+      try {
+        const { name, params } = await request.json() as { name: string; params: Record<string, unknown> }
+        const handler = lookupOwn(actions, name)
+        if (!handler) return Response.json({ success: false, error: 'Action not found.' }, { status: 404 })
+        const tools = createActionTools(this.env, userId, '', internal => super.fetch(internal))
+        const result = await handler({ userId, params, tools, env: this.env, callerJwt: '' })
+        return Response.json(result)
+      } catch { return Response.json({ success: false, error: 'Unable to confirm the operation. Refresh before retrying.' }, { status: 500 }) }
+    })
   }
 }
 

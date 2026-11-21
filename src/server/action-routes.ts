@@ -62,14 +62,25 @@ export function registerActionRoutes(app: Hono<AppContext>, resolveAuth: Resolve
     // returns the handler argument, env secrets included, as the response.
     const action = lookupOwn(actions, name)
     if (!action) return c.json({ error: 'Action not found' }, 404)
-    const params = await c.req.json<Record<string, unknown>>()
-    const tools = createActionTools(c.env, auth.userId, callerJwt)
-    const result = await action({ userId: auth.userId, params, tools, env: c.env, callerJwt })
-    return c.json(result as unknown as Record<string, unknown>)
+    let params: Record<string, unknown>
+    try {
+      const body = await c.req.text()
+      if (body.length > 12000) return c.json({ success: false, error: 'Request too large.' }, 413)
+      const parsed: unknown = JSON.parse(body)
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw new Error('Invalid body')
+      params = parsed as Record<string, unknown>
+    } catch { return c.json({ success: false, error: 'Expected a JSON object.' }, 400) }
+    // Run the whole short workflow in the one existing RecordRoom. Identity
+    // is reconstructed here, never forwarded from client-supplied headers.
+    const stub = c.env.RECORD_ROOMS.get(c.env.RECORD_ROOMS.idFromName(`app:${c.env.DEEPSPACE_APP_ID}`))
+    return stub.fetch(new Request('https://internal/internal/launchproof-action', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', 'X-User-Id': auth.userId, 'X-App-Action': 'true' },
+      body: JSON.stringify({ name, params }),
+    }))
   })
 }
 
-function createActionTools(env: Env, userId: string, callerJwt: string): ActionTools {
+export function createActionTools(env: Env, userId: string, callerJwt: string, execute?: (request: Request) => Promise<Response>): ActionTools {
   const stub = env.RECORD_ROOMS.get(env.RECORD_ROOMS.idFromName(`app:${env.DEEPSPACE_APP_ID}`))
 
   // The DO returns ActionResult<unknown>; callers below supply the precise
@@ -78,7 +89,7 @@ function createActionTools(env: Env, userId: string, callerJwt: string): ActionT
     tool: string,
     params: Record<string, unknown>,
   ): Promise<ActionResult<TData>> {
-    const res = await stub.fetch(
+    const res = await (execute ?? ((request: Request) => stub.fetch(request)))(
       new Request('https://internal/api/tools/execute', {
         method: 'POST',
         headers: {

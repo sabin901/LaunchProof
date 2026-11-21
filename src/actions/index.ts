@@ -1,6 +1,6 @@
 import type { ActionHandler, ActionResult, ActionContext, ActionTools } from 'deepspace/worker'
 import type { Env } from '../../worker'
-import { REQUIRED_GATES, validateReleaseInput, validateEvidence, boundedText, type Release, type Membership, type Gate } from '../lib/release-rules'
+import { REQUIRED_GATES, validateReleaseInput, validateEvidence, boundedText, getApprovalEligibility, makeDecisionSnapshot, type Release, type Membership, type Gate } from '../lib/release-rules'
 
 function confirmed<T>(result: ActionResult<T>): T {
   if (!result.success) throw new Error('The record operation could not be confirmed. Please retry.')
@@ -31,6 +31,22 @@ const guarded = (handler: ActionHandler<Env>): ActionHandler<Env> => async ctx =
 }
 
 export const actions: Record<string, ActionHandler<Env>> = {
+  decideRelease: guarded(async ctx => {
+    const { releaseId, release } = await authorize(ctx, true)
+    const decision = ctx.params.decision
+    if (decision !== 'approved' && decision !== 'rejected') throw new Error('Choose approve or reject.')
+    const reason = boundedText(ctx.params.reason ?? '', 'Decision reason', decision === 'rejected' ? 10 : 0, 1000)
+    const gates = confirmed(await ctx.tools.query<Gate>('gates', { where: { releaseId }, limit: 6 })).records.map(r => r.data)
+    const members = confirmed(await ctx.tools.query<Membership>('team_members', { where: { teamId: releaseId, status: 'active' } })).records.map(r => r.data)
+    const readiness = getApprovalEligibility(release, gates, members, releaseId)
+    if (release.policyVersion !== 'v1' || !readiness.completeSet) throw new Error('The release does not have the complete five-gate policy.')
+    if (decision === 'approved' && readiness.missing.length) throw new Error('All five gates need verified, attributed evidence before approval.')
+    if (decision === 'approved' && !readiness.independentReview) throw new Error('An independent reviewer must verify at least one gate before approval.')
+    const decisionAt = Date.now()
+    const snapshot = makeDecisionSnapshot(release, gates, ctx.userId, decision, reason, decisionAt, readiness.independentReviewerIds)
+    confirmed(await ctx.tools.update('releases', releaseId, { status: decision, decisionSnapshot: snapshot, decisionAt, decisionBy: ctx.userId, decisionReason: reason }))
+    return { success: true, data: { snapshot, warning: await activity(ctx.tools, releaseId, ctx.userId, `release_${decision}`, `Release ${decision}; evidence snapshot saved.`) } }
+  }),
   addReviewer: guarded(async ctx => {
     const { releaseId } = await authorize(ctx, true)
     const targetUserId = boundedText(ctx.params.targetUserId, 'Reviewer ID', 1, 150)

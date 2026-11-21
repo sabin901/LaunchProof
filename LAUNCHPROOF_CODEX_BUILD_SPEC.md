@@ -1,5 +1,9 @@
 # LaunchProof: Codex Build Contract
 
+## Accepted refinement — November 21, 2026
+
+The user's follow-up evaluation supersedes the original self-approval policy: approval requires at least one verified gate attested by an active reviewer other than the release lead. Enforce this on the server and show the missing condition in the UI. Store the independent reviewer identity in the final snapshot. Product positioning: a collaborative release sign-off workspace preserving human evidence and decision context; no claim of independent CI certification, tamper-proof auditing, or deployment execution. Keep the four-collection architecture.
+
 **Status:** Implementation specification, not a claim that the application exists or has passed tests.
 
 **Deadline:** Sunday, November 22, 2026 at 11:59 PM US Eastern, which is 10:59 PM US Central.

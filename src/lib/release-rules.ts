@@ -7,7 +7,7 @@ export const REQUIRED_GATES = [
 ] as const
 
 export type Gate = {
-  releaseId: string; key: string; title: string; required: boolean
+  releaseId: string; key: string; title: string; required: boolean | 0 | 1
   status: 'pending' | 'verified' | 'failed'; evidenceNote: string; evidenceUrl: string
   verifiedBy: string; verifiedAt: number
 }
@@ -20,7 +20,7 @@ export type Membership = { teamId: string; userId: string; status: string; roleI
 export type ReleaseEvent = { releaseId: string; actorUserId: string; kind: string; summary: string; occurredAt: number }
 export type DecisionSnapshot = {
   name: string; version: string; policyVersion: 'v1'; decision: 'approved' | 'rejected'
-  actorId: string; decidedAt: number; reason: string; gates: Gate[]
+  actorId: string; decidedAt: number; reason: string; gates: Gate[]; independentReviewerIds: string[]
 }
 
 export function boundedText(value: unknown, label: string, min: number, max: number): string {
@@ -46,7 +46,7 @@ export function validateEvidence(status: unknown, note: unknown, url: unknown = 
 export function getReleaseReadiness(gates: Gate[], releaseId?: string) {
   const expected = REQUIRED_GATES.map(g => g.key as string)
   const completeSet = gates.length === 5 && new Set(gates.map(g => g.key)).size === 5 &&
-    gates.every(g => expected.includes(g.key) && g.required === true && (!releaseId || g.releaseId === releaseId)) &&
+    gates.every(g => expected.includes(g.key) && (g.required === true || g.required === 1) && (!releaseId || g.releaseId === releaseId)) &&
     new Set(gates.map(g => g.releaseId)).size === 1
   const qualifies = (g: Gate) => {
     try {
@@ -57,7 +57,15 @@ export function getReleaseReadiness(gates: Gate[], releaseId?: string) {
   const missing = expected.filter(key => !gates.some(g => g.key === key && qualifies(g)))
   return { approvable: completeSet && missing.length === 0, completeSet, missing, verified: gates.filter(qualifies).length }
 }
-export function makeDecisionSnapshot(release: Release, gates: Gate[], actorId: string, decision: 'approved' | 'rejected', reason: string, now: number): DecisionSnapshot {
+export function getApprovalEligibility(release: Release, gates: Gate[], members: Membership[], releaseId: string) {
+  const readiness = getReleaseReadiness(gates, releaseId)
+  const reviewers = new Set(members.filter(m => m.teamId === releaseId && m.status === 'active' && m.roleInRelease === 'reviewer' && m.userId !== release.leadUserId).map(m => m.userId))
+  const independentReviewerIds = [...new Set(gates.filter(g => g.releaseId === releaseId && g.status === 'verified' && reviewers.has(g.verifiedBy)).map(g => g.verifiedBy))]
+  return { ...readiness, independentReviewerIds, independentReview: independentReviewerIds.length > 0,
+    approvable: release.status === 'draft' && readiness.approvable && independentReviewerIds.length > 0 }
+}
+export function makeDecisionSnapshot(release: Release, gates: Gate[], actorId: string, decision: 'approved' | 'rejected', reason: string, now: number, independentReviewerIds: string[] = []): DecisionSnapshot {
   return structuredClone({ name: release.name, version: release.version, policyVersion: release.policyVersion,
-    decision, actorId, decidedAt: now, reason, gates })
+    decision, actorId, decidedAt: now, reason,
+    gates: [...gates].sort((a, b) => REQUIRED_GATES.findIndex(g => g.key === a.key) - REQUIRED_GATES.findIndex(g => g.key === b.key)), independentReviewerIds })
 }
