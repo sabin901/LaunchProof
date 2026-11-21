@@ -20,28 +20,28 @@
  * `color-scheme: light`. Replace or delete it once the app has its own. */
 [data-theme="paper"] {
   color-scheme: light;
-  --color-background: #f6f2eb;
-  --color-foreground: #302b26;
-  --color-card: #fffdf9;
-  --color-card-foreground: #302b26;
+  --color-background: #f8f5f5;
+  --color-foreground: #30272a;
+  --color-card: #fffdfd;
+  --color-card-foreground: #30272a;
   --color-popover: #ffffff;
-  --color-popover-foreground: #302b26;
-  --color-primary: #ad4526;
+  --color-popover-foreground: #30272a;
+  --color-primary: #7d2437;
   --color-primary-foreground: #ffffff;
-  --color-secondary: #f2ece4;
-  --color-secondary-foreground: #302b26;
-  --color-muted: #f2ece4;
-  --color-muted-foreground: #756b61;
-  --color-accent: #e6ddd1;
-  --color-accent-foreground: #302b26;
+  --color-secondary: #f3ecef;
+  --color-secondary-foreground: #30272a;
+  --color-muted: #f3ecef;
+  --color-muted-foreground: #76686e;
+  --color-accent: #e7dce0;
+  --color-accent-foreground: #30272a;
   --color-destructive: #dc2626;
   --color-destructive-foreground: #ffffff;
-  --color-border: #e6ddd1;
-  --color-input: #e6ddd1;
-  --color-ring: #ad4526;
+  --color-border: #e7dce0;
+  --color-input: #e7dce0;
+  --color-ring: #7d2437;
   --shadow-card: 0 1px 2px 0 rgba(0, 0, 0, 0.016);
   --shadow-card-hover: 0 2px 8px 0 rgba(0, 0, 0, 0.032);
-  --color-shell: #fffdf9;
+  --color-shell: #fffdfd;
   --color-shell-panel: #ffffff;
 }
 

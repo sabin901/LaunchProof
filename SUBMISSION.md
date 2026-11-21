@@ -12,7 +12,10 @@ External integrations: none added. We prioritized a complete collaborative workf
 
 Key tradeoff: one fixed production-release policy and human-attested evidence, not automatic CI certification. Actions serialize within the existing RecordRoom; this is not crash rollback, cryptographic immutability, or a claim of unlimited scale.
 
-Codex generated and tested the implementation. Local verification: 10 unit tests, 19 browser tests, typecheck, lint, and production build. These cover actual multi-user synchronization, direct record access controls, independent-review enforcement, concurrency, final-state locks and report persistence. All 19 browser tests also passed against production on November 21, 2026, including the complete two-person approval flow. Production error logs returned zero events in the checked window.
+Codex generated and tested the implementation. Local verification: 10 unit tests, 20 browser tests, typecheck, lint, and production build. These cover actual multi-user synchronization, direct record access controls, independent-review enforcement, concurrency, final-state locks and report persistence. All 20 browser tests also passed against production on November 21, 2026, including the complete two-person approval flow. Production error logs returned zero events in the checked window.
 
 Developer's personal verification: add only checks you actually perform; agent-run tests are listed separately above.
+
+
+The dashboard also supports release search/status filters, an attention view, one-click handoff links, and export/print of saved reports. The interface uses deep-maroon accents on warm off-white. Repeated form request state is consolidated in a small shared hook; no new runtime dependencies were added.
 

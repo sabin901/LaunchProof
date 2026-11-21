@@ -78,3 +78,8 @@ Finish Phase 1 UI and pure tests, start authenticated dev server, verify creatio
 - User said blue resembled other projects. Replaced it before deployment with warm ivory (#f6f2eb), charcoal (#302b26), and burnt orange (#ad4526), including borders, focus, navigation, buttons and illustrations. Green/red remain semantic status indicators.
 - End-to-end UI flow rerun after palette change: PASS. Screenshots visually inspected.
 - Dashboard filtering/clipboard/mobile test rerun to capture updated warm screenshots.
+
+## Final requested maroon palette
+- User superseded orange with maroon/dark red. Applied #7d2437 accent, #581526 hover, #f6e9ed soft accents, and warm off-white across CSS and browser theme color.
+- Full redesigned production suite passed 20 tests on the preceding release. After the color-only correction, local UI workflow and dashboard tests both passed; inspected maroon screenshot.
+- Updated README, submission notes and screenshots to match the final theme.

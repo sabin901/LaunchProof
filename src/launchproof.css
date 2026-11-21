@@ -1,12 +1,12 @@
 /* LaunchProof: shared warm-dashboard tokens and small, composable layouts. */
 :root {
-  --lp-bg: #f6f2eb;
+  --lp-bg: #f8f5f5;
   --lp-surface: #ffffff;
-  --lp-text: #302b26;
-  --lp-muted: #756b61;
-  --lp-line: #e6ddd1;
-  --lp-accent: #ad4526;
-  --lp-accent-soft: #fae9de;
+  --lp-text: #30272a;
+  --lp-muted: #76686e;
+  --lp-line: #e7dce0;
+  --lp-accent: #7d2437;
+  --lp-accent-soft: #f6e9ed;
   --lp-radius: 12px;
 }
 .lp-page {
@@ -72,8 +72,8 @@
     box-shadow 160ms ease;
 }
 .lp-button:hover {
-  background: #8e361c;
-  box-shadow: 0 3px 10px #ad452618;
+  background: #581526;
+  box-shadow: 0 3px 10px #7d243718;
 }
 .lp-button:disabled {
   opacity: 0.5;
@@ -81,7 +81,7 @@
   box-shadow: none;
 }
 .lp-secondary {
-  color: #66584c;
+  color: #68525b;
   background: var(--lp-surface);
   border-color: var(--lp-line);
 }
@@ -89,11 +89,11 @@
 .lp-secondary[aria-pressed='true'] {
   color: var(--lp-accent);
   background: var(--lp-accent-soft);
-  border-color: #e9bba3;
+  border-color: #dfb8c4;
 }
 .lp-page :focus-visible,
 .lp-landing :focus-visible {
-  outline: 3px solid #d8956f;
+  outline: 3px solid #bb7087;
   outline-offset: 3px;
 }
 .lp-panel,
@@ -194,7 +194,7 @@
   width: 100%;
   min-height: 44px;
   padding: 10px 12px;
-  border: 1px solid #ddd1c2;
+  border: 1px solid #ddd0d5;
   border-radius: 8px;
   background: var(--lp-surface);
   color: var(--lp-text);
@@ -202,7 +202,7 @@
 }
 .lp-page input::placeholder,
 .lp-page textarea::placeholder {
-  color: #948677;
+  color: #94828a;
 }
 .lp-page textarea {
   min-height: 100px;
@@ -239,7 +239,7 @@
   border-bottom: 0;
 }
 .lp-release-row:hover {
-  background: #fcf6ef;
+  background: #fcf6f8;
 }
 .lp-release-row > div {
   flex: 1;
@@ -253,7 +253,7 @@
   margin-top: 5px;
 }
 .lp-release-row > svg {
-  color: #958574;
+  color: #97818b;
 }
 .lp-badge {
   display: inline-flex;
@@ -262,8 +262,8 @@
   font-size: 11px;
   font-weight: 550;
   text-transform: capitalize;
-  background: #f0e9df;
-  color: #736453;
+  background: #f1e9ec;
+  color: #75616a;
   padding: 5px 10px;
   border-radius: 6px;
   white-space: nowrap;
@@ -299,7 +299,7 @@
   text-align: center;
 }
 .lp-empty svg {
-  color: #c0967d;
+  color: #bc8b9b;
 }
 .lp-identity-panel {
   display: flex;
@@ -319,7 +319,7 @@
 .lp-identity code {
   display: inline-block;
   font-size: 11px;
-  color: #756454;
+  color: #78616b;
   overflow-wrap: anywhere;
   margin-top: 7px;
 }
@@ -361,9 +361,9 @@
   place-items: center;
   width: 30px;
   height: 30px;
-  background: #f3eae0;
+  background: #f3eaee;
   border-radius: 7px;
-  color: #a07e67;
+  color: #a17a8a;
   font: 11px monospace;
   flex-shrink: 0;
 }
@@ -381,12 +381,12 @@
 }
 .lp-score span {
   font-size: 22px;
-  color: #b9a997;
+  color: #bba6b0;
 }
 .lp-note {
   font-size: 11px !important;
   margin-top: 16px;
-  color: #897b6c !important;
+  color: #8b7781 !important;
   line-height: 1.7;
 }
 .lp-page progress {
@@ -435,7 +435,7 @@
   top: 6px;
   width: 7px;
   height: 7px;
-  background: #d68b63;
+  background: #bd7890;
   border-radius: 50%;
 }
 .lp-event p {
@@ -443,7 +443,7 @@
 }
 .lp-event time {
   font-size: 10px;
-  color: #9a8b7a;
+  color: #9c8691;
 }
 
 /* Static front door: a clear product overview, no auth or record providers. */
@@ -501,14 +501,14 @@
 }
 .lp-preview {
   background: white;
-  border: 1px solid #e4d6c6;
+  border: 1px solid #e5d6dc;
   border-radius: 14px;
-  box-shadow: 0 24px 60px #5b391a18;
+  box-shadow: 0 24px 60px #5b193418;
   overflow: hidden;
   transform: rotate(-1deg);
 }
 .lp-preview-header {
-  background: #fbf6ef;
+  background: #fbf6f8;
   padding: 19px 22px;
   display: flex;
   justify-content: space-between;
@@ -534,11 +534,11 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  border-bottom: 1px solid #eee4d8;
+  border-bottom: 1px solid #eee3e8;
   font-size: 12px;
 }
 .lp-preview-row > span {
-  color: #a39381;
+  color: #a58e99;
   font: 10px monospace;
 }
 .lp-preview-row strong {
@@ -552,7 +552,7 @@
   margin: 18px 24px 24px;
   padding: 13px;
   background: var(--lp-accent-soft);
-  color: #955135;
+  color: #81394e;
   font-size: 11px;
   border-radius: 7px;
 }
@@ -564,7 +564,7 @@
   gap: 24px;
 }
 .lp-benefits section {
-  border-top: 1px solid #e4d6c6;
+  border-top: 1px solid #e5d6dc;
   padding-top: 22px;
 }
 .lp-benefits svg {
@@ -722,7 +722,7 @@
   .lp-panel {
     break-inside: avoid;
     box-shadow: none;
-    border-color: #b9a895;
+    border-color: #baa5af;
   }
   .lp-page p {
     color: #494038;
