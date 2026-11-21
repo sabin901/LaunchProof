@@ -65,3 +65,16 @@ Finish Phase 1 UI and pure tests, start authenticated dev server, verify creatio
 - Runtime limitations remain as documented in README (human evidence, no crash rollback/cryptographic audit, no automatic repair, retained fictional test records, fixed policy). No optional AI/email.
 - README and SUBMISSION now contain actual live URL and test outcomes. Final docs-only revision will be committed/pushed/redeployed to keep checkout, source and deployment aligned.
 - No required implementation task remains after final source/deploy consistency check. Developer may review the live app and use SUBMISSION.md for the portal; no portal submission was performed.
+
+## Requested frontend redesign — November 21, 2026
+- User chose a light dashboard with blue accents. Reworked landing, release overview, workspace, navigation, report, shared tokens, and responsive styles.
+- Added live release counts, search by name/version, status filters, Needs attention gate view, copy reviewer ID/workspace link/report summary, JSON snapshot download, and print styles. No new collections, services, integrations, or runtime dependencies.
+- Simplified repeated request handling into useAction; reduced navigation state/duplicate link rendering and removed unused nav.ts. Formatted app-specific actions/rules/components for readability. Formatting increases physical line counts while removing dense one-line code; no false claim of a smaller total feature codebase.
+- Confirmed typecheck, lint, 10 unit tests and 20 real local browser tests. Expanded tests verify search/status filtering, clipboard contents, attention filtering, downloaded snapshot fields, print-control visibility, desktop/mobile no-overflow, plus all original security/concurrency tests.
+- Visually reviewed new landing/dashboard/workspace and mobile dashboard screenshots. Updated docs screenshots.
+- Next: production build, clean commit/push/deploy, production regression suite.
+
+## Palette correction from user
+- User said blue resembled other projects. Replaced it before deployment with warm ivory (#f6f2eb), charcoal (#302b26), and burnt orange (#ad4526), including borders, focus, navigation, buttons and illustrations. Green/red remain semantic status indicators.
+- End-to-end UI flow rerun after palette change: PASS. Screenshots visually inspected.
+- Dashboard filtering/clipboard/mobile test rerun to capture updated warm screenshots.

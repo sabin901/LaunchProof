@@ -21,6 +21,14 @@ Source: https://github.com/sabin901/LaunchProof
 
 ## Architecture and boundaries
 
+### Dashboard conveniences
+
+- Warm ivory dashboard with charcoal text and burnt-orange accents, live release counts, name/version search, and status filters.
+- “Needs attention” focuses the workspace on gates without qualifying evidence.
+- Copy reviewer IDs and workspace URLs to make handoff easier; copying a URL does not grant access.
+- Download a final decision as JSON, copy its summary, or use the print layout. Exports use the saved snapshot, never mutable live gates.
+- Forms share a small confirmed-action hook; navigation has one responsive link set and an accessible account menu. Styles use shared color tokens and respect reduced motion. No new runtime dependencies or backend collections.
+
 React + TypeScript + Tailwind, scaffolded by `create-deepspace@0.44.2`, using `deepspace@0.44.2`, Vite, native authentication, file-based routing, RecordRoom and `useQuery` subscriptions. The scaffold's `users`/`settings` schemas and provider/auth wiring are preserved. No added database, backend framework, socket server, or UI library.
 
 | Application collection | Purpose | Client access |

@@ -1,4 +1,5 @@
 import { test, expect } from 'deepspace/testing'
+import { readFile } from 'node:fs/promises'
 
 test('complete browser workflow and narrow-screen layout', async ({ users }) => {
   test.setTimeout(90_000)
@@ -13,6 +14,9 @@ test('complete browser workflow and narrow-screen layout', async ({ users }) => 
   await lead.page.getByLabel('Version', { exact: true }).fill('v1.0')
   await lead.page.getByRole('button', { name: 'Create release', exact: true }).click()
   await expect(lead.page.getByTestId('gate-card')).toHaveCount(5)
+  await lead.page.getByRole('button', { name: 'Needs attention', exact: true }).click()
+  await expect(lead.page.getByTestId('gate-card')).toHaveCount(5)
+  await lead.page.getByRole('button', { name: 'Show all gates', exact: true }).click()
   for (let index = 0; index < 5; index++) {
     const card = lead.page.getByTestId('gate-card').nth(index)
     await card.getByRole('button', { name: 'Record evidence' }).click()
@@ -21,6 +25,10 @@ test('complete browser workflow and narrow-screen layout', async ({ users }) => 
     await expect(card.getByText('verified', { exact: true })).toBeVisible()
   }
   await expect(lead.page.getByRole('button', { name: 'Approve release' })).toBeDisabled()
+  await lead.page.getByRole('button', { name: 'Needs attention', exact: true }).click()
+  await expect(lead.page.getByTestId('gate-card')).toHaveCount(0)
+  await expect(lead.page.getByText('All gates have qualifying evidence', { exact: true })).toBeVisible()
+  await lead.page.getByRole('button', { name: 'Show all gates', exact: true }).click()
   await lead.page.getByLabel('Reviewer ID', { exact: true }).fill(reviewerId)
   await lead.page.getByRole('button', { name: 'Add reviewer', exact: true }).click()
   await expect(lead.page.getByText('Reviewer added.', { exact: true })).toBeVisible()
@@ -30,10 +38,26 @@ test('complete browser workflow and narrow-screen layout', async ({ users }) => 
   await independentCard.getByLabel('Evidence note').fill('Independent reviewer examined the fictional QA evidence.')
   await independentCard.getByRole('button', { name: 'Save evidence' }).click()
   await expect(lead.page.getByRole('button', { name: 'Approve release' })).toBeEnabled()
+  await lead.page.locator('main').evaluate(el => el.scrollTo(0, 0))
   await lead.page.screenshot({ path: '.deepspace/screenshots/workspace.png', fullPage: true })
   await lead.page.getByRole('button', { name: 'Approve release' }).click()
   await lead.page.getByRole('link', { name: 'View decision report' }).click()
   await expect(lead.page.getByTestId('snapshot-gate')).toHaveCount(5)
+  const downloadEvent = lead.page.waitForEvent('download')
+  await lead.page.getByRole('button', { name: 'Download JSON' }).click()
+  const download = await downloadEvent
+  const snapshot = JSON.parse(await readFile((await download.path())!, 'utf8'))
+  expect(snapshot.name).toBe(name)
+  expect(snapshot.decision).toBe('approved')
+  expect(snapshot.gates).toHaveLength(5)
+  expect(snapshot.independentReviewerIds).toContain(reviewerId)
+  await lead.context.grantPermissions(['clipboard-read', 'clipboard-write'])
+  await lead.page.getByRole('button', { name: 'Copy report summary' }).click()
+  expect(await lead.page.evaluate(() => navigator.clipboard.readText())).toContain(name)
+  await lead.page.emulateMedia({ media: 'print' })
+  await expect(lead.page.getByRole('button', { name: 'Download JSON' })).toBeHidden()
+  await expect(lead.page.getByTestId('snapshot-gate')).toHaveCount(5)
+  await lead.page.emulateMedia({ media: 'screen' })
   await lead.page.setViewportSize({ width: 390, height: 844 })
   expect(await lead.page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   await lead.page.screenshot({ path: '.deepspace/screenshots/report-mobile.png', fullPage: true })
