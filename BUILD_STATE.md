@@ -54,3 +54,14 @@ Finish Phase 1 UI and pure tests, start authenticated dev server, verify creatio
 - Public GitHub main pushed at 315929c. First deploy refused route_taken: launchproof.app.space belongs to another app.
 - app list confirms only this new, undeployed app belongs to the signed-in account. app source confirms permanent github/sabin901/launchproof claim revision 1.
 - Requested URL was conditional on availability. Selected launchproof-sabin901.app.space; kept immutable app ID and GitHub source unchanged.
+
+## Phase 5 verified — November 21, 2026, approximately 3:43 PM Central
+- Live: https://launchproof-sabin901.app.space
+- Public repository: https://github.com/sabin901/LaunchProof
+- Release rel_01M800ZJ5PWDW2QX798KS40J5T deployed from clean pushed commit 21333126f97ea2945092cd02506e94d31c76e728. GitHub main and local HEAD matched. DeepSpace ledger reports GitHub source revision 1, sourceDirty:false, serving:true (its GitHub ledger does not expose a Git commitOid).
+- Production command: LAUNCHPROOF_BASE_URL=https://launchproof-sabin901.app.space npx playwright test --config tests/playwright.config.ts — 19 passed in 25.9s. Separate fresh browser contexts and real production auth/records; no app-record/action mocks. Only scaffold external integration status tests mock the integration boundary.
+- Verified full browser create → five evidence submissions → lead-only approval disabled → invite reviewer → independent attestation → lead approval → saved report, plus refresh, outsider direct record reads, direct-write refusal, unauthorized/incomplete approval, cross-release edits, simultaneous approvals and approval/edit race, rejected report, reconnect, mobile layout.
+- npx deepspace logs --level error --since 15m --limit 30 --json returned count:0 after deployment/testing.
+- Runtime limitations remain as documented in README (human evidence, no crash rollback/cryptographic audit, no automatic repair, retained fictional test records, fixed policy). No optional AI/email.
+- README and SUBMISSION now contain actual live URL and test outcomes. Final docs-only revision will be committed/pushed/redeployed to keep checkout, source and deployment aligned.
+- No required implementation task remains after final source/deploy consistency check. Developer may review the live app and use SUBMISSION.md for the portal; no portal submission was performed.
