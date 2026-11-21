@@ -49,3 +49,8 @@ Finish Phase 1 UI and pure tests, start authenticated dev server, verify creatio
 - Independent reviewer is mandatory on server and in UI; active reviewer IDs are captured in snapshot. Lead-only five-gate self-approval is tested/refused.
 - Added README and submission draft with limitations and precise attribution. Optional AI/email omitted.
 - Next: push public GitHub main and deploy clean revision; run production tests and inspect logs.
+
+## Initial deployment result
+- Public GitHub main pushed at 315929c. First deploy refused route_taken: launchproof.app.space belongs to another app.
+- app list confirms only this new, undeployed app belongs to the signed-in account. app source confirms permanent github/sabin901/launchproof claim revision 1.
+- Requested URL was conditional on availability. Selected launchproof-sabin901.app.space; kept immutable app ID and GitHub source unchanged.

@@ -1,4 +1,4 @@
-name = "launchproof"
+name = "launchproof-sabin901"
 compatibility_date = "2025-01-01"
 compatibility_flags = ["nodejs_compat", "assets_navigation_has_no_effect"]
 main = "worker.ts"
@@ -28,7 +28,7 @@ run_worker_first = ["/api/*", "/ws/*", "/internal/*", "/v1/*", "/_deepspace/*", 
 # secrets, and collaborators all key to it. Renames are safe.
 [vars]
 DEEPSPACE_APP_ID = "app_01M80009Z3FM4K2GTPMS4KXA08"
-APP_NAME = "launchproof"
+APP_NAME = "launchproof-sabin901"
 # Exact comma-separated native callback URIs. Set this before deploying an
 # Expo client, for example: "myapp://auth/callback".
 NATIVE_AUTH_REDIRECT_URIS = ""
@@ -74,3 +74,4 @@ bindings = [
 [dev]
 port = 8780
 inspector_port = 9237
+
