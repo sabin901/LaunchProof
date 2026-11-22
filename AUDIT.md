@@ -36,3 +36,11 @@
 7. Add only the checks you personally performed to the portal writeup. Be ready to explain the action authorization boundary, independent-review rule, and why serialization is not rollback.
 
 The app is not submitted to the careers portal by this audit.
+
+## Final readability pass — November 22, 2026
+
+Named action handlers now follow workflow order; evidence qualification is computed once per readiness calculation. Comments explain security and concurrency invariants. Removed unused theme metadata. A failed best-effort setup-failure marker no longer hides the original creation error. No schema or dependency changes.
+
+Typecheck, lint, 13 unit tests and 21 local browser tests passed. See docs/CODE_GUIDE.md for the reading order.
+
+All 21 browser tests also passed against the deployed refactor on November 22, 2026 (21.8 seconds). The production error-log query returned zero events in the checked 15-minute window.

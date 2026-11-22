@@ -89,3 +89,14 @@ Finish Phase 1 UI and pure tests, start authenticated dev server, verify creatio
 - Fixed timing-dependent catalog loading assertions using a controlled external response; membership/activity connection states and progress accessibility improved.
 - Expanded security cases; typecheck/lint/10 unit/21 local browser tests pass.
 - One low esbuild Windows servedir advisory remains in SDK/build dependencies; compatible audit fix preview offers no version change. No moderate/high/critical findings. See AUDIT.md for bounded scan, limitations, and personal walkthrough.
+
+## Final readability pass — November 22, 2026
+- Named action handlers in create/invite/evidence/decision order; explicit requireDraftMember helper; flatter activity results; pure evidence check reused within readiness.
+- Added rationale comments for action RBAC bypass, gate/release matching, server identity/time, locking/local superclass execution, and immutable decision snapshots.
+- Removed unused themes.ts and stale theme instructions; added docs/CODE_GUIDE.md.
+- Initial typecheck caught widened boolean return types after extracting functions; fixed with explicit SDK ActionResult return annotations. Final typecheck and lint pass.
+- 13 unit and 21 real local browser tests pass; no new runtime dependencies/schema changes.
+- Creation failure cleanup is best-effort and preserves original failure; interrupted records remain non-editable.
+- Documentation update initially hit Windows default text encoding; rerun explicitly as UTF-8.
+
+All 21 browser tests also passed against the deployed refactor on November 22, 2026 (21.8 seconds). The production error-log query returned zero events in the checked 15-minute window.

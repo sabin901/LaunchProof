@@ -87,3 +87,11 @@ GitHub is the requested source. Before first deployment, `deepspace status --jso
 ## Pre-submission audit
 
 See [AUDIT.md](AUDIT.md) for the final security findings, fixes, dependency advisory, and personal verification checklist. The audit added explicit integration allowlisting and regression checks for malformed actions and direct record access.
+
+## Final readability pass — November 22, 2026
+
+Start with [Reading LaunchProof](docs/CODE_GUIDE.md) for the code map and request flow. The four server actions are named functions in workflow order, shared eligibility checks evaluate evidence once, and comments explain authorization, serialization, and saved snapshots. Unused theme metadata and obsolete theme instructions were removed. No runtime dependencies or database schema changes were introduced.
+
+Typecheck, lint, 13 unit tests, and all 21 local browser tests passed after this pass. The three added unit cases cover non-draft decision refusal, unknown policy gates, and stable snapshot ordering without mutating input. The earlier audit findings and operational limits still apply.
+
+All 21 browser tests also passed against the deployed refactor on November 22, 2026 (21.8 seconds). The production error-log query returned zero events in the checked 15-minute window.
