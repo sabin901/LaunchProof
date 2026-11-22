@@ -17,15 +17,13 @@ export function useAction() {
     setFailed(false)
     try {
       const result = await callAction<T>(name, params)
+      // A saved write may include an activity-log warning. Keep it visible
+      // instead of replacing it with the form's ordinary success message.
       setMessage(result.warning || success)
       return result
     } catch (error) {
       setFailed(true)
-      setMessage(
-        error instanceof Error
-          ? error.message
-          : 'Request failed. Please retry.',
-      )
+      setMessage(error instanceof Error ? error.message : 'Request failed. Please retry.')
     } finally {
       setBusy(false)
     }

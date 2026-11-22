@@ -54,12 +54,7 @@ export type DecisionSnapshot = {
   independentReviewerIds: string[]
 }
 
-export function boundedText(
-  value: unknown,
-  label: string,
-  min: number,
-  max: number,
-): string {
+export function boundedText(value: unknown, label: string, min: number, max: number): string {
   if (typeof value !== 'string') throw new Error(`${label} must be text.`)
   const text = value.trim()
   if (text.length < min || text.length > max)
@@ -72,13 +67,8 @@ export function validateReleaseInput(name: unknown, version: unknown) {
     version: boundedText(version, 'Version', 1, 30),
   }
 }
-export function validateEvidence(
-  status: unknown,
-  note: unknown,
-  url: unknown = '',
-) {
-  if (status !== 'verified' && status !== 'failed')
-    throw new Error('Choose verified or failed.')
+export function validateEvidence(status: unknown, note: unknown, url: unknown = '') {
+  if (status !== 'verified' && status !== 'failed') throw new Error('Choose verified or failed.')
   const evidenceNote = boundedText(note, 'Evidence note', 10, 1000)
   const evidenceUrl = boundedText(url, 'Evidence URL', 0, 500)
   if (evidenceUrl) {
@@ -88,48 +78,49 @@ export function validateEvidence(
     } catch {
       throw new Error('Evidence URL must be a valid HTTP(S) address.')
     }
-    if (
-      !['http:', 'https:'].includes(parsed.protocol) ||
-      parsed.username ||
-      parsed.password
-    )
+    if (!['http:', 'https:'].includes(parsed.protocol) || parsed.username || parsed.password)
       throw new Error('Evidence URL must be HTTP(S) without credentials.')
   }
   return { status, evidenceNote, evidenceUrl }
 }
+// Shared by the UI and server. The server always rechecks these rules on save.
+const requiredKeys: string[] = REQUIRED_GATES.map((gate) => gate.key)
+
+function hasVerifiedEvidence(gate: Gate): boolean {
+  try {
+    validateEvidence(gate.status, gate.evidenceNote, gate.evidenceUrl)
+    return (
+      gate.status === 'verified' &&
+      Boolean(gate.verifiedBy?.trim()) &&
+      Number.isFinite(gate.verifiedAt) &&
+      gate.verifiedAt > 0
+    )
+  } catch {
+    return false
+  }
+}
+
 export function getReleaseReadiness(gates: Gate[], releaseId?: string) {
-  const expected = REQUIRED_GATES.map((g) => g.key as string)
+  // Five rows alone are insufficient: reject duplicates, foreign-release gates,
+  // and unknown keys. SQLite may return the required flag as 1 instead of true.
   const completeSet =
-    gates.length === 5 &&
-    new Set(gates.map((g) => g.key)).size === 5 &&
+    gates.length === requiredKeys.length &&
+    new Set(gates.map((g) => g.key)).size === requiredKeys.length &&
     gates.every(
       (g) =>
-        expected.includes(g.key) &&
+        requiredKeys.includes(g.key) &&
         (g.required === true || g.required === 1) &&
         (!releaseId || g.releaseId === releaseId),
     ) &&
     new Set(gates.map((g) => g.releaseId)).size === 1
-  const qualifies = (g: Gate) => {
-    try {
-      validateEvidence(g.status, g.evidenceNote, g.evidenceUrl)
-      return (
-        g.status === 'verified' &&
-        Boolean(g.verifiedBy?.trim()) &&
-        Number.isFinite(g.verifiedAt) &&
-        g.verifiedAt > 0
-      )
-    } catch {
-      return false
-    }
-  }
-  const missing = expected.filter(
-    (key) => !gates.some((g) => g.key === key && qualifies(g)),
-  )
+  const verifiedGates = gates.filter(hasVerifiedEvidence)
+  const verifiedKeys = new Set(verifiedGates.map((gate) => gate.key))
+  const missing = requiredKeys.filter((key) => !verifiedKeys.has(key))
   return {
     approvable: completeSet && missing.length === 0,
     completeSet,
     missing,
-    verified: gates.filter(qualifies).length,
+    verified: verifiedGates.length,
   }
 }
 export function getApprovalEligibility(
@@ -139,6 +130,8 @@ export function getApprovalEligibility(
   releaseId: string,
 ) {
   const readiness = getReleaseReadiness(gates, releaseId)
+  // A lead cannot supply their own independent review; only active reviewers
+  // belonging to this release count, even if an old attestation still exists.
   const reviewers = new Set(
     members
       .filter(
@@ -155,9 +148,7 @@ export function getApprovalEligibility(
       gates
         .filter(
           (g) =>
-            g.releaseId === releaseId &&
-            g.status === 'verified' &&
-            reviewers.has(g.verifiedBy),
+            g.releaseId === releaseId && g.status === 'verified' && reviewers.has(g.verifiedBy),
         )
         .map((g) => g.verifiedBy),
     ),
@@ -167,9 +158,7 @@ export function getApprovalEligibility(
     independentReviewerIds,
     independentReview: independentReviewerIds.length > 0,
     approvable:
-      release.status === 'draft' &&
-      readiness.approvable &&
-      independentReviewerIds.length > 0,
+      release.status === 'draft' && readiness.approvable && independentReviewerIds.length > 0,
   }
 }
 export function makeDecisionSnapshot(
@@ -181,6 +170,8 @@ export function makeDecisionSnapshot(
   now: number,
   independentReviewerIds: string[] = [],
 ): DecisionSnapshot {
+  // Copy the data, not references to live gates. Reports and exports must read
+  // this snapshot so they always show what was considered at decision time.
   return structuredClone({
     name: release.name,
     version: release.version,

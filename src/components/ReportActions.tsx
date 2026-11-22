@@ -3,6 +3,7 @@ import type { DecisionSnapshot } from '../lib/release-rules'
 import { CopyButton } from './CopyButton'
 
 export function ReportActions({ snapshot }: { snapshot: DecisionSnapshot }) {
+  // Export only the persisted decision, never the workspace's live gate query.
   const summary = [
     `${snapshot.name} ${snapshot.version} — ${snapshot.decision}`,
     `Decision: ${new Date(snapshot.decidedAt).toISOString()} by ${snapshot.actorId}`,
