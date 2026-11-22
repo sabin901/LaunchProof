@@ -23,6 +23,13 @@ test.describe('Smoke tests', () => {
     await page.goto('/')
     await waitForApp(page)
     await expect(page.getByTestId('static-landing')).toBeVisible()
+    // A successful page render must also deliver the local brand artwork.
+    const artwork = page.locator('.lp-brand img, .lp-illustration')
+    await expect(artwork).toHaveCount(4)
+    for (const image of await artwork.all()) {
+      await image.scrollIntoViewIfNeeded()
+      await expect.poll(() => image.evaluate((node: HTMLImageElement) => node.complete && node.naturalWidth > 0)).toBe(true)
+    }
     expect(errors).toEqual([])
   })
 

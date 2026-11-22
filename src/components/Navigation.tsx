@@ -4,7 +4,6 @@ import { AuthOverlay, useAuthProfileReady, signOut } from 'deepspace'
 import {
   ChevronDown,
   LogOut,
-  ShieldCheck,
   LayoutDashboard,
   Settings,
 } from 'lucide-react'
@@ -31,7 +30,7 @@ export default function Navigation() {
     <>
       <nav data-testid="app-navigation" className="lp-nav">
         <Link to="/home" className="lp-brand">
-          <ShieldCheck size={23} />
+          <img src="/logo.svg" width="32" height="32" alt="" />
           <span>LaunchProof</span>
         </Link>
         <div className="lp-nav-links">

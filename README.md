@@ -1,16 +1,17 @@
+<img src="public/logo.svg" width="64" height="64" alt="LaunchProof logo" />
+
 # LaunchProof
 
 **Verify together. Ship with confidence.**
 
-A collaborative release sign-off workspace that preserves human verification evidence and decision context. It complements CI and issue trackers: it does not execute tests, independently certify evidence, or deploy your software.
+A collaborative release sign-off workspace for evidence, independent review, and saved decisions. Built with React, TypeScript, and DeepSpace authentication, records, live subscriptions, and server actions.
 
-Live URL: https://launchproof-sabin901.app.space (the preferred launchproof.app.space name was already taken).
-
-Source: https://github.com/sabin901/LaunchProof
+[Open the app](https://launchproof-sabin901.app.space) · [Development guide](docs/DEVELOPMENT.md) · [Submission writeup](docs/SUBMISSION.md)
 
 ![LaunchProof landing](docs/landing.png)
 
 ## Use the app
+
 
 1. Open the workspace and sign in with DeepSpace.
 2. Create a release with a product name and version. Five production-release gates are created: build/tests, authentication, critical issues, regression smoke, and recovery.
@@ -19,32 +20,8 @@ Source: https://github.com/sabin901/LaunchProof
 5. Approval requires all five gates with qualifying evidence, **at least one gate verified by a different active reviewer**, and an authorized lead. A lead may instead reject with a reason.
 6. After a decision, evidence is read-only. The decision report renders the saved snapshot, including independent reviewer identities, even after refreshing.
 
-## Architecture and boundaries
+## Local development
 
-### Dashboard conveniences
-
-- Warm off-white dashboard with charcoal text and deep-maroon accents, live release counts, name/version search, and status filters.
-- “Needs attention” focuses the workspace on gates without qualifying evidence.
-- Copy reviewer IDs and workspace URLs to make handoff easier; copying a URL does not grant access.
-- Download a final decision as JSON, copy its summary, or use the print layout. Exports use the saved snapshot, never mutable live gates.
-- Forms share a small confirmed-action hook; navigation has one responsive link set and an accessible account menu. Styles use shared color tokens and respect reduced motion. No new runtime dependencies or backend collections.
-
-React + TypeScript + Tailwind, scaffolded by `create-deepspace@0.44.2`, using `deepspace@0.44.2`, Vite, native authentication, file-based routing, RecordRoom and `useQuery` subscriptions. The scaffold's `users`/`settings` schemas and provider/auth wiring are preserved. No added database, backend framework, socket server, or UI library.
-
-| Application collection | Purpose | Client access |
-| --- | --- | --- |
-| releases | Release state and final evidence snapshot | Team read; no writes |
-| team_members | Active release lead/reviewer memberships | Team read; no writes |
-| gates | Five requirements with latest attestation | Team read; no writes |
-| events | Append-only application activity | Team read; no writes |
-
-`createRelease`, `addReviewer`, `verifyGate`, and `decideRelease` are authenticated server actions. SDK privileged tools bypass RBAC, so each release operation explicitly checks membership, state and role; evidence writes also check gate/release matching. Roles within a release are distinct from SDK app roles. Browser-supplied actor IDs and timestamps are ignored. URL schemes and string lengths are validated server-side. Direct writes are denied for both member and admin collection permissions.
-
-The authenticated edge sends the complete action to the **same existing app RecordRoom**. `AppRecordRoom.fetch` executes its short record-only workflow inside Cloudflare `blockConcurrencyWhile`; SDK tools call the superclass locally, avoiding RPC back into a locked room. This serializes competing workflows across Worker isolates. No external integration is called within the lock. See [Cloudflare's documented behavior](https://developers.cloudflare.com/durable-objects/api/state/#blockconcurrencywhile).
-
-Serialization is **not** a multi-record rollback transaction or a cryptographic audit guarantee. Creation remains `initializing` until all records exist and fails closed on partial creation. A process failure may leave incomplete records. The release snapshot is the primary decision record; activity failures return a warning. There is no automatic repair job. Only ordinary application operations are constrained; infrastructure operators can still modify storage. Tests exercise concurrent approval/edit and concurrent approvals, not all possible infrastructure failures.
-
-## Local development and tests
 
 Use Node 24 and npm 11.6+. Verified environment: Node 24.14.1, npm 11.13.0. Lockfile pins transitive dependencies.
 
@@ -64,34 +41,14 @@ Three usable DeepSpace test accounts are needed for all tests. Inspect `npx deep
 
 To test an existing deployment without starting a local server, set `LAUNCHPROOF_BASE_URL` to its HTTPS origin and run `npx playwright test --config tests/playwright.config.ts`. Do not point this at an unrelated app.
 
-Verified November 21, 2026 (America/Chicago): 10 unit tests; 21 local Playwright tests, including end-to-end browser approval, independent reviewer enforcement, three-user isolation, underlying record API denials, concurrent decision/edit, concurrent approvals, rejection, reconnect and report refresh. Typecheck, lint and production build passed. All 20 browser tests also passed against the live deployment on November 21, 2026 at approximately 3:56 PM Central, using fresh browser contexts and real production auth/records. The production error-log query returned zero events. The developer has not been credited with personally executing these agent-run checks. See `BUILD_STATE.md` for actual failures and fixes.
+## Scope and tradeoffs
 
-## Source and deployment
+The policy has five fixed gates. Evidence is human-attested: LaunchProof does not run CI, certify supporting links, or deploy your software. Final decisions preserve the evidence snapshot and prevent further application edits.
 
-GitHub is the requested source. Before first deployment, `deepspace status --json` must infer `github` from `origin`. Never run `deepspace push`: first source selection is permanent. Commit and push `main`, deploy the clean working tree, then compare the deployed source revision with GitHub.
+There are no external integrations, evidence revision history, deletion, membership removal, or interrupted-setup repair UI. Serialized actions prevent concurrent decision races but are not multi-record rollback transactions. See the [development guide](docs/DEVELOPMENT.md) for security boundaries, operational limitations, and a personal walkthrough.
 
-`.dev.vars`, platform sessions, test credentials, local logs and test artifacts are ignored. Do not commit secrets. App identity is public configuration, not a credential.
+## Deployment and provenance
 
-## Deliberate tradeoffs and provenance
+GitHub is this app's permanent source. Commit and push to `main`, then deploy the clean checkout with `npx deepspace deploy`. Do not use `deepspace push`. Keep credentials, `.dev.vars`, logs, and test artifacts out of Git.
 
-- One fixed production-release policy; no generic policy builder, CI fetching or deployment automation.
-- Reviewer IDs provide a small existing-user handoff without exposing a public user directory or building email invitations.
-- Human attestation is not proof that a referenced test passed. Supporting links are not fetched or certified.
-- No optional AI/email integration was added. The core workflow needs neither provider credits nor an external API. The integration catalog/debug surfaces remain, but external integration execution is denied unless explicitly enabled in the app allowlist. No integration is part of release decisions.
-- Evidence edits have no version history beyond activity messages; a final decision captures the exact latest evidence. No membership removal, release deletion, retention management, or partial-creation repair UI.
-- New releases may duplicate if creation is retried after an ambiguous network failure; review the list first. Evidence is last-writer-wins before the final decision. Serialization trades throughput for a small, understandable correctness boundary in a single scope.
-- Codex generated the app-specific schemas, rules, actions, UI, tests, and documentation; inspected SDK implementation/types; ran the recorded tests; reviewed desktop/mobile screenshots. The developer supplied the scope, required independent review, authenticated the CLI, and selected the public GitHub repository. No claim is made that the developer personally ran the automated checks.
-
-
-
-## Pre-submission audit
-
-See [AUDIT.md](AUDIT.md) for the final security findings, fixes, dependency advisory, and personal verification checklist. The audit added explicit integration allowlisting and regression checks for malformed actions and direct record access.
-
-## Final readability pass — November 22, 2026
-
-Start with [Reading LaunchProof](docs/CODE_GUIDE.md) for the code map and request flow. The four server actions are named functions in workflow order, shared eligibility checks evaluate evidence once, and comments explain authorization, serialization, and saved snapshots. Unused theme metadata and obsolete theme instructions were removed. No runtime dependencies or database schema changes were introduced.
-
-Typecheck, lint, 13 unit tests, and all 21 local browser tests passed after this pass. The three added unit cases cover non-draft decision refusal, unknown policy gates, and stable snapshot ordering without mutating input. The earlier audit findings and operational limits still apply.
-
-All 21 browser tests also passed against the deployed refactor on November 22, 2026 (21.8 seconds). The production error-log query returned zero events in the checked 15-minute window.
+Codex implemented and checked the code under the applicant's direction. Automated checks cover TypeScript, lint, 13 unit tests, and 21 browser tests using real authentication and records. Agent-run tests do not replace the applicant's personal walkthrough. Original logo and illustrations live in `public/` and require no external services.

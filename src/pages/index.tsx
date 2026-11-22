@@ -1,11 +1,7 @@
 import { Link } from 'react-router-dom'
 import {
   ArrowUpRight,
-  ShieldCheck,
   CheckCircle2,
-  Users,
-  FileCheck2,
-  LockKeyhole,
 } from 'lucide-react'
 import { Seo } from '../components/Seo'
 import { seo } from '../seo'
@@ -18,7 +14,7 @@ export default function Landing() {
       <div data-testid="static-landing" className="lp-landing">
         <nav className="lp-landing-nav">
           <span className="lp-brand">
-            <ShieldCheck size={25} />
+            <img src="/logo.svg" width="32" height="32" alt="" />
             LaunchProof
           </span>
           <span className="lp-eyebrow">
@@ -76,7 +72,7 @@ export default function Landing() {
         </main>
         <div className="lp-benefits">
           <section>
-            <FileCheck2 size={22} />
+            <img className="lp-illustration" src="/illustrations/evidence.svg" width="360" height="180" alt="" loading="lazy" />
             <h2>Keep the evidence together</h2>
             <p>
               Attach what you checked and supporting links. Every attestation
@@ -84,7 +80,7 @@ export default function Landing() {
             </p>
           </section>
           <section>
-            <Users size={22} />
+            <img className="lp-illustration" src="/illustrations/review.svg" width="360" height="180" alt="" loading="lazy" />
             <h2>Make review a team effort</h2>
             <p>
               Work live with invited reviewers. At least one independent
@@ -92,7 +88,7 @@ export default function Landing() {
             </p>
           </section>
           <section>
-            <LockKeyhole size={22} />
+            <img className="lp-illustration" src="/illustrations/decision.svg" width="360" height="180" alt="" loading="lazy" />
             <h2>Preserve the decision</h2>
             <p>
               Save the evidence considered at sign-off. Download or print the

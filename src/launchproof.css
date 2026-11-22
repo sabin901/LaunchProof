@@ -567,10 +567,14 @@
   border-top: 1px solid #e5d6dc;
   padding-top: 22px;
 }
-.lp-benefits svg {
-  color: var(--lp-accent);
-  margin-bottom: 13px;
+.lp-illustration {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 22px;
+  border-radius: 12px;
 }
+.lp-brand img { flex-shrink: 0; }
 .lp-benefits h2 {
   font-size: 15px;
   font-weight: 650;

@@ -16,9 +16,9 @@ I directed Codex on the scope, independent-review requirement, public repository
 
 ## Before pasting into the portal
 
-- Personally complete the two-account walkthrough in AUDIT.md, then add one sentence saying exactly what you checked. Do not describe agent-run tests as your own manual verification.
+- Personally complete the two-account walkthrough in [DEVELOPMENT.md](DEVELOPMENT.md), then add one sentence saying exactly what you checked. Do not describe agent-run tests as your own manual verification.
 - The supplied portal copy conflicts: its main instructions say no minimum integration count, while its lower project-bar panel says at least three. This project uses native DeepSpace capabilities and zero external integrations; keep that distinction explicit.
 
-The final code pass organized the four actions into named workflow steps, documented the authorization and concurrency boundaries inline, and added a short code-reading guide in docs/CODE_GUIDE.md.
+The final code pass organized the four actions into named workflow steps, documented the authorization and concurrency boundaries inline, and added a short code-reading guide in DEVELOPMENT.md.
 
 Final verification on November 22, 2026: all 21 browser tests passed against the deployed app; the checked production error-log window was empty.
